@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">Astronetics</string>
+
+    <string name="menu_theoretical_materials">Теоретические материалы</string>
+    <string name="menu_tests">Тесты</string>
+    <string name="menu_rating">Рейтинг</string>
+    <string name="menu_settings">Настройки</string>
+
+    <string name="theme_header">Просмотр темы</string>
+    <string name="theme_count_1">%1$d запись</string>
+    <string name="theme_count_3">%1$d записи</string>
+    <string name="theme_count_5">%1$d записей</string>
+
+    <string name="test_header">Прохождение теста</string>
+    <string name="test_result">Результат: %1$d/%2$d</string>
+    <string name="test_not_passed_yet">Ещё не пройден</string>
+    <string name="test_submit">Завершить тест</string>
+    <string name="test_answer_all_questions">Для отправки ответов на проверку необходимо ответить на все вопросы</string>
+    <string name="test_answer_is_correct">Ваш ответ верный</string>
+    <string name="test_answer_is_wrong">Ваш ответ неверный</string>
+    <string name="test_sending_answers">Отправка ответов</string>
+    <string name="test_repass_unavaiable">Перепрохождение недоступно</string>
+    <string name="test_repass_avaiable">Доступно перепрохождение</string>
+    <string name="test_repass_avaiable_time">Можно перепройти через %1$s</string>
+    <string name="test_repass">Пройти заново</string>
+    <string name="test_submit_confirmation">Вы действительно хотите завершить тест и отправить свои ответы?</string>
+    <string name="test_repass_confirmation">Вы действительно хотите перепройти тест?</string>
+    <string name="test_you_can_get_cert">Вы можете получить именной сертификат</string>
+    <string name="test_you_can_get_cert_profile">Вы можете получить именной сертификат. Для получения необходимо заполнить профиль</string>
+
+    <string name="rating_score_1">Вы набрали %1$d балл</string>
+    <string name="rating_score_3">Вы набрали %1$d балла</string>
+    <string name="rating_score_5">Вы набрали %1$d баллов</string>
+    <string name="rating_better">Это лучше, чем у %1$d%% игроков</string>
+    <string name="rating_to_get_a_cert">При успешном прохождении всех тестов вы получите сертификат</string>
+    <string name="rating_cert_progress">Пройдено %1$d/%2$d</string>
+    <string name="rating_download_cert">Скачать сертификат</string>
+    <string name="rating_download_cert_confirm">Вы подтверждаете выпуск сертификата на имя: %1$s?</string>
+    <string name="rating_need_to_fill_profile">Для получения сертификата необходимо заполнить профиль</string>
+
+    <string name="settings_header">Настройки</string>
+    <string name="settings_successfully_saved">Информация успешно обновлена</string>
+    <string name="settings_required_fields">Введите имя и фамилию</string>
+    <string name="settings_input_firstname">Ваше имя</string>
+    <string name="settings_input_lastname">Ваша фамилия</string>
+    <string name="settings_input_midname">Ваше отчество</string>
+    <string name="settings_enter_firstname">Введите имя</string>
+    <string name="settings_enter_lastname">Введите фамилию</string>
+    <string name="settings_enter_midname">Введите отчество (если есть)</string>
+    <string name="setting_edit_unavailable">Изменение ФИО недоступно</string>
+
+    <string name="error">Ошибка</string>
+    <string name="error_fatal">Произошла критическая ошибка</string>
+    <string name="error_network">Необходимо подключение к Интернету</string>
+
+    <string name="congrats">Поздравляем!</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="ok">OK</string>
+    <string name="notification">Уведомление</string>
+    <string name="confirmation">Подтверждение</string>
+    <string name="confirm_action">Вы подтверждаете это действие?</string>
+    <string name="loading">Загрузка</string>
+    <string name="reload">Обновить</string>
+    <string name="close">Закрыть</string>
+    <string name="get">Получить</string>
+    <string name="save">Сохранить</string>
+    <string name="go_to_profile">Перейти к профилю</string>
+
+    <string name="empty_str" />
+</resources>

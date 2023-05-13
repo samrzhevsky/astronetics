@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_theoretical_materials"
+            android:icon="@drawable/ic_menu_book"
+            android:title="@string/menu_theoretical_materials" />
+        <item
+            android:id="@+id/nav_tests_list"
+            android:icon="@drawable/ic_menu_checklist"
+            android:title="@string/menu_tests" />
+        <item
+            android:id="@+id/nav_rating"
+            android:icon="@drawable/ic_menu_star_half"
+            android:title="@string/menu_rating" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/baseline_manage_accounts_24"
+            android:title="@string/menu_settings" />
+    </group>
+
+</menu>
