@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_theoretical_materials">
+
+    <fragment
+        android:id="@+id/nav_theoretical_materials"
+        android:name="ru.samrzhevsky.astronetics.ui.TheoreticalFragment"
+        android:label="@string/menu_theoretical_materials"
+        tools:layout="@layout/fragment_theoretical">
+        <action
+            android:id="@+id/action_nav_to_theoretical_article"
+            app:destination="@id/nav_theoretical_article" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_tests_list"
+        android:name="ru.samrzhevsky.astronetics.ui.TestsListFragment"
+        android:label="@string/menu_tests"
+        tools:layout="@layout/fragment_tests_list">
+        <action
+            android:id="@+id/action_nav_tests_list_to_nav_test"
+            app:destination="@id/nav_test" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_rating"
+        android:name="ru.samrzhevsky.astronetics.ui.RatingFragment"
+        android:label="@string/menu_rating"
+        tools:layout="@layout/fragment_rating">
+        <action
+            android:id="@+id/action_nav_rating_to_nav_settings"
+            app:destination="@id/nav_settings" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="ru.samrzhevsky.astronetics.ui.SettingsFragment"
+        android:label="@string/settings_header"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/nav_theoretical_article"
+        android:name="ru.samrzhevsky.astronetics.ui.ArticleFragment"
+        android:label="@string/theme_header"
+        tools:layout="@layout/fragment_article" />
+
+    <fragment
+        android:id="@+id/nav_test"
+        android:name="ru.samrzhevsky.astronetics.ui.TestFragment"
+        android:label="@string/test_header"
+        tools:layout="@layout/fragment_test">
+        <action
+            android:id="@+id/action_nav_test_self"
+            app:destination="@id/nav_test" />
+        <action
+            android:id="@+id/action_nav_test_to_nav_rating"
+            app:destination="@id/nav_rating" />
+        <action
+            android:id="@+id/action_nav_test_to_nav_settings"
+            app:destination="@id/nav_settings" />
+    </fragment>
+
+</navigation>
