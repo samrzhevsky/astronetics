@@ -1,6 +1,5 @@
 package ru.samrzhevsky.astronetics;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -15,7 +14,6 @@ import ru.samrzhevsky.astronetics.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfig;
 
-    @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
