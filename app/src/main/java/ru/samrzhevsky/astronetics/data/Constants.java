@@ -8,7 +8,7 @@ public class Constants {
     public static final String API_URL = "https://astronetics.local/api.php";
 
     public static final ArrayList<Category> CATEGORIES = new ArrayList<Category>() {{
-            add(new Category(1, "Планеты солнечной системы"));
+            add(new Category(1, "Планеты Солнечной системы"));
             add(new Category(2, "Метеориты и метеоры"));
             add(new Category(3, "Космические явления"));
             add(new Category(4, "Звёзды и созвездия"));
@@ -16,6 +16,15 @@ public class Constants {
     }};
 
     public static final ArrayList<Article> ARTICLES = new ArrayList<Article>() {{
+        add(new Article(1, "Меркурий", "Наименьшая планета Солнечной системы и самая близкая к Солнцу", "article_1_1", "mercury"));
+        add(new Article(1, "Венера", "Ближайшая к Земле планета, вторая по удалённости от Солнца и шестая по размеру планета Солнечной системы", "article_1_2", "venus"));
+        add(new Article(1, "Земля", "Единственное известное в настоящее время тело во Вселенной, населённое живыми организмами", "article_1_3", "earth"));
+        add(new Article(1, "Марс", "Четвёртая по удалённости от Солнца и седьмая по размеру планета Солнечной системы", "article_1_4", "mars"));
+        add(new Article(1, "Юпитер", "Крупнейшая планета Солнечной системы, газовый гигант", "article_1_5", "jupiter"));
+        add(new Article(1, "Сатурн", "Шестая планета по удалённости от Солнца, обладает заметной системой колец", "article_1_6", "saturn"));
+        add(new Article(1, "Уран", "Седьмая планета по удалённости от Солнца, третья по диаметру и четвёртая по массе", "article_1_7", "uranus"));
+        add(new Article(1, "Нептун", "Восьмая и самая дальняя от Солнца планета Солнечной системы", "article_1_8", "neptune"));
+
         add(new Article(2, "Метеориты", "Общие сведения о метеоритах и их свойствах", "article_2_1", "article_2_1_meteorite"));
         add(new Article(2, "Метеориты - камни с небес", "Как много метеоритов падает на Землю? Для чего используют метеориты?", "article_2_2", "article_2_1_meteorite"));
         add(new Article(2, "Опасность метеоритов", "Что происходит при падении метеорита?", "article_2_3", "article_2_1_meteorite"));
