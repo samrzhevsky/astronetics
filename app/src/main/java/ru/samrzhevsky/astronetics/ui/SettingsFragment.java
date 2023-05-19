@@ -1,9 +1,12 @@
 package ru.samrzhevsky.astronetics.ui;
 
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +20,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ru.samrzhevsky.astronetics.BuildConfig;
 import ru.samrzhevsky.astronetics.Utils;
 import ru.samrzhevsky.astronetics.R;
 import ru.samrzhevsky.astronetics.databinding.FragmentSettingsBinding;
@@ -42,6 +46,8 @@ public class SettingsFragment extends Fragment {
 
         binding.settingsSave.setOnClickListener(this::saveProfile);
         binding.settingsEditUnavailable.setVisibility(View.GONE);
+
+        binding.settingsCheckForUpdates.setOnClickListener(this::checkForUpdates);
 
         return root;
     }
@@ -185,6 +191,90 @@ public class SettingsFragment extends Fragment {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private void checkForUpdates(View view) {
+        if (Utils.isNetworkUnavailable(context)) {
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.error_network)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.cancel())
+                    .show();
+            return;
+        }
+
+        progressDialog.show();
+
+        new Thread(() -> {
+            try {
+                String apiResponse = Utils.apiGetRequest(context,"checkForUpdates", "current=" + BuildConfig.VERSION_CODE);
+                JSONObject json = new JSONObject(apiResponse);
+
+                if (json.getInt("status") == 1) {
+                    boolean hasUpdates = json.getBoolean("has_updates");
+                    String downloadUrl = json.getString("download_url");
+
+                    activity.runOnUiThread(() -> {
+                        progressDialog.cancel();
+
+                        if (hasUpdates) {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(R.string.notification)
+                                    .setMessage(R.string.settings_update_available)
+                                    .setNegativeButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                    .setPositiveButton(R.string.reload, (dialog, id) -> downloadUpdate(downloadUrl))
+                                    .show();
+                        } else {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(R.string.notification)
+                                    .setMessage(R.string.settings_installed_last_version)
+                                    .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                    .show();
+                        }
+
+                    });
+                } else {
+                    activity.runOnUiThread(() -> {
+                        progressDialog.cancel();
+
+                        try {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(R.string.error)
+                                    .setMessage(json.getString("error"))
+                                    .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                    .show();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                activity.runOnUiThread(() -> {
+                    progressDialog.cancel();
+
+                    new AlertDialog.Builder(context)
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.error_fatal)
+                            .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                            .show();
+                });
+
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void downloadUpdate(String downloadUrl) {
+        Uri uri = Uri.parse(downloadUrl);
+        String fileName = getString(R.string.app_name).toLowerCase() + ".apk";
+
+        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(uri)
+                .setMimeType("application/vnd.android.package-archive")
+                .setTitle(fileName)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+        manager.enqueue(request);
     }
 
     @Override

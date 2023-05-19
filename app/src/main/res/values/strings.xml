@@ -48,6 +48,9 @@
     <string name="settings_enter_lastname">Введите фамилию</string>
     <string name="settings_enter_midname">Введите отчество (если есть)</string>
     <string name="setting_edit_unavailable">Изменение ФИО недоступно</string>
+    <string name="settings_check_for_updates">Проверить наличие обновлений</string>
+    <string name="settings_update_available">Доступна новая версия. Вы можете обновить приложение</string>
+    <string name="settings_installed_last_version">У вас установлена последняя версия приложения</string>
 
     <string name="error">Ошибка</string>
     <string name="error_fatal">Произошла критическая ошибка</string>
