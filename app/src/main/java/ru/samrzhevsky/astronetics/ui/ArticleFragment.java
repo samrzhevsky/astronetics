@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +23,10 @@ public class ArticleFragment extends Fragment {
         WebView webView = binding.articleWebview;
 
         String resourceName = requireArguments().getString("resource_name");
-        webView.getSettings().setJavaScriptEnabled(true);
+
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDefaultTextEncodingName("utf-8");
         webView.loadUrl("file:///android_asset/articles/" + resourceName + ".html");
 
         return root;
