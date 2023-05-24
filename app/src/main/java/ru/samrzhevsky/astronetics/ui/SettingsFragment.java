@@ -1,9 +1,11 @@
 package ru.samrzhevsky.astronetics.ui;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,7 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
@@ -31,6 +37,10 @@ public class SettingsFragment extends Fragment {
     private FragmentActivity activity;
     private ProgressDialog progressDialog;
 
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+
+    private String downloadUrl;
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -48,6 +58,23 @@ public class SettingsFragment extends Fragment {
         binding.settingsEditUnavailable.setVisibility(View.GONE);
 
         binding.settingsCheckForUpdates.setOnClickListener(this::checkForUpdates);
+
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        // Permission granted
+                        downloadUpdate();
+                    } else {
+                        // Permission denied
+                        new AlertDialog.Builder(context)
+                                .setTitle(R.string.error)
+                                .setMessage(R.string.error_permissions)
+                                .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                .show();
+                    }
+                }
+        );
 
         return root;
     }
@@ -212,7 +239,7 @@ public class SettingsFragment extends Fragment {
 
                 if (json.getInt("status") == 1) {
                     boolean hasUpdates = json.getBoolean("has_updates");
-                    String downloadUrl = json.getString("download_url");
+                    downloadUrl = json.getString("download_url");
 
                     activity.runOnUiThread(() -> {
                         progressDialog.cancel();
@@ -222,7 +249,7 @@ public class SettingsFragment extends Fragment {
                                     .setTitle(R.string.notification)
                                     .setMessage(R.string.settings_update_available)
                                     .setNegativeButton(R.string.ok, (dialog, id) -> dialog.cancel())
-                                    .setPositiveButton(R.string.reload, (dialog, id) -> downloadUpdate(downloadUrl))
+                                    .setPositiveButton(R.string.reload, (dialog, id) -> tryDownloadUpdate())
                                     .show();
                         } else {
                             new AlertDialog.Builder(context)
@@ -264,10 +291,20 @@ public class SettingsFragment extends Fragment {
         }).start();
     }
 
-    private void downloadUpdate(String downloadUrl) {
+    private void tryDownloadUpdate() {
+        // request permission
+        int permissionCheck = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            downloadUpdate();
+        }
+    }
+
+    private void downloadUpdate() {
         Uri uri = Uri.parse(downloadUrl);
         String fileName = getString(R.string.app_name).toLowerCase() + ".apk";
-
         DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(uri)
                 .setMimeType("application/vnd.android.package-archive")
