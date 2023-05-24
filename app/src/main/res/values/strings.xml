@@ -55,6 +55,7 @@
     <string name="error">Ошибка</string>
     <string name="error_fatal">Произошла критическая ошибка</string>
     <string name="error_network">Необходимо подключение к Интернету</string>
+    <string name="error_permissions">Отсутствуют необходимые разрешения</string>
 
     <string name="congrats">Поздравляем!</string>
     <string name="yes">Да</string>

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.net.Uri;
@@ -12,8 +13,12 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.Manifest;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -32,7 +37,22 @@ public class RatingFragment extends Fragment {
     private FragmentRatingBinding binding;
     private Context context;
 
-    private void downloadCert(String certDownloadUrl) {
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+
+    private String certDownloadUrl;
+
+    private void tryDownloadCert() {
+        // request permission
+        int permissionCheck = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            downloadCert();
+        }
+    }
+
+    private void downloadCert() {
         Uri uri = Uri.parse(certDownloadUrl);
         DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(uri)
@@ -49,6 +69,23 @@ public class RatingFragment extends Fragment {
         context = requireContext();
         FragmentActivity activity = requireActivity();
         NavController navController = NavHostFragment.findNavController(this);
+
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        // Permission granted
+                        downloadCert();
+                    } else {
+                        // Permission denied
+                        new AlertDialog.Builder(context)
+                                .setTitle(R.string.error)
+                                .setMessage(R.string.error_permissions)
+                                .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                .show();
+                    }
+                }
+        );
 
         // rounded background
         ShapeDrawable shapeDrawable = new ShapeDrawable(
@@ -85,7 +122,7 @@ public class RatingFragment extends Fragment {
 
                     if (json.getInt("status") == 1) {
                         String fullName = json.getString("full_name");
-                        String certDownloadUrl = json.getString("cert_url");
+                        certDownloadUrl = json.getString("cert_url");
                         boolean isCertSaved = json.getBoolean("cert_saved");
                         boolean isProfileFilled = json.getBoolean("profile_filled");
 
@@ -110,7 +147,7 @@ public class RatingFragment extends Fragment {
                                 if (isProfileFilled) {
                                     binding.btnDownloadCert.setOnClickListener(view -> {
                                         if (isCertSaved) {
-                                            downloadCert(certDownloadUrl);
+                                            tryDownloadCert();
                                         } else {
                                             new AlertDialog.Builder(context)
                                                     .setTitle(R.string.confirmation)
@@ -118,8 +155,8 @@ public class RatingFragment extends Fragment {
                                                     .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
                                                     .setPositiveButton(R.string.yes, (dialog, id) -> {
                                                         dialog.cancel();
-                                                        downloadCert(certDownloadUrl);
-                                                        binding.btnDownloadCert.setOnClickListener(_view -> downloadCert(certDownloadUrl));
+                                                        tryDownloadCert();
+                                                        binding.btnDownloadCert.setOnClickListener(_view -> tryDownloadCert());
                                                     })
                                                     .show();
                                         }
