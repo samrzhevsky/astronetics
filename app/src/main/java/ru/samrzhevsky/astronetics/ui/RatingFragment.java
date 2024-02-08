@@ -31,6 +31,7 @@ import org.json.JSONObject;
 
 import ru.samrzhevsky.astronetics.Utils;
 import ru.samrzhevsky.astronetics.R;
+import ru.samrzhevsky.astronetics.VkAuth;
 import ru.samrzhevsky.astronetics.databinding.FragmentRatingBinding;
 
 public class RatingFragment extends Fragment {
@@ -40,6 +41,10 @@ public class RatingFragment extends Fragment {
     private ActivityResultLauncher<String> requestPermissionLauncher;
 
     private String certDownloadUrl;
+
+    private ProgressDialog progressDialog;
+
+    private FragmentActivity activity;
 
     private void tryDownloadCert() {
         // request permission
@@ -63,11 +68,74 @@ public class RatingFragment extends Fragment {
         manager.enqueue(request);
     }
 
+    @SuppressWarnings("deprecation")
+    private void resetProgress(View view) {
+        if (Utils.isNetworkUnavailable(context)) {
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.error_network)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.cancel())
+                    .show();
+            return;
+        }
+
+        progressDialog.setMessage(getString(R.string.test_sending_answers));
+        progressDialog.show();
+
+        new Thread(() -> {
+            try {
+                String apiResponse = Utils.apiPostRequest(context, "resetProgress", null, "");
+                JSONObject json = new JSONObject(apiResponse);
+
+                if (json.getInt("status") == 1) {
+                    activity.runOnUiThread(() -> {
+                        progressDialog.cancel();
+
+                        new AlertDialog.Builder(context)
+                                .setTitle(R.string.success)
+                                .setMessage(R.string.rating_reset_progress_success)
+                                .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                .show();
+
+                        Navigation.findNavController(view).navigate(R.id.action_nav_rating_to_nav_settings);
+                    });
+                } else {
+                    activity.runOnUiThread(() -> {
+                        progressDialog.cancel();
+
+                        try {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(R.string.error)
+                                    .setMessage(json.getString("error"))
+                                    .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                    .show();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                activity.runOnUiThread(() -> {
+                    progressDialog.cancel();
+
+                    new AlertDialog.Builder(context)
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.error_fatal)
+                            .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                            .show();
+                });
+
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    @SuppressWarnings("deprecation")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentRatingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         context = requireContext();
-        FragmentActivity activity = requireActivity();
+        activity = requireActivity();
         NavController navController = NavHostFragment.findNavController(this);
 
         requestPermissionLauncher = registerForActivityResult(
@@ -99,7 +167,7 @@ public class RatingFragment extends Fragment {
         binding.ratingCard1.setBackground(shapeDrawable);
         binding.ratingCard2.setBackground(shapeDrawable);
 
-        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.loading));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
@@ -114,6 +182,10 @@ public class RatingFragment extends Fragment {
                     .setMessage(R.string.error_network)
                     .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
                     .show();
+        } else if (VkAuth.getUserToken(context) == null) {
+            // display login button if token is null
+            binding.btnRatingVkLogin.setOnClickListener(view -> VkAuth.startNewIntent(context));
+            progressDialog.cancel();
         } else {
             new Thread(() -> {
                 try {
@@ -143,7 +215,9 @@ public class RatingFragment extends Fragment {
                         activity.runOnUiThread(() -> {
                             if (!certDownloadUrl.equals("")) {
                                 binding.btnDownloadCert.setVisibility(View.VISIBLE);
+                                binding.btnResetProgress.setVisibility(View.VISIBLE);
 
+                                // Download certificate
                                 if (isProfileFilled) {
                                     binding.btnDownloadCert.setOnClickListener(view -> {
                                         if (isCertSaved) {
@@ -172,13 +246,26 @@ public class RatingFragment extends Fragment {
                                             })
                                             .show());
                                 }
+
+                                // Reset progress
+                                binding.btnResetProgress.setOnClickListener(view -> new AlertDialog.Builder(context)
+                                        .setTitle(R.string.confirmation)
+                                        .setMessage(R.string.rating_reset_progress_confirm)
+                                        .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
+                                        .setPositiveButton(R.string.yes, (dialog, id) -> {
+                                            dialog.cancel();
+                                            resetProgress(view);
+                                        })
+                                        .show());
                             }
 
                             binding.ratingScore.setText(scoreStr);
                             binding.ratingBetter.setText(betterStr);
                             binding.ratingProgress.setProgress(progress);
                             binding.ratingProgressText.setText(progressStr);
-                            binding.ratingLayout.setVisibility(View.VISIBLE);
+                            binding.ratingCard1.setVisibility(View.VISIBLE);
+                            binding.ratingCard2.setVisibility(View.VISIBLE);
+                            binding.btnRatingVkLogin.setVisibility(View.GONE);
 
                             progressDialog.cancel();
                         });

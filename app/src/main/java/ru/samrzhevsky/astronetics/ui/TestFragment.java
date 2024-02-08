@@ -47,6 +47,7 @@ public class TestFragment extends Fragment {
 
     private ProgressDialog progressDialog;
 
+    @SuppressWarnings("deprecation")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = requireActivity();
         context = requireContext();
@@ -232,6 +233,7 @@ public class TestFragment extends Fragment {
         return root;
     }
 
+    @SuppressWarnings("deprecation")
     private void submitTest(View view, int testId, int[] questionIds, HashMap<Integer, ArrayList<Integer>> answersIds) {
         if (Utils.isNetworkUnavailable(context)) {
             new AlertDialog.Builder(context)
@@ -366,6 +368,7 @@ public class TestFragment extends Fragment {
         }).start();
     }
 
+    @SuppressWarnings("deprecation")
     private void repassTest(View view, int testId) {
         if (Utils.isNetworkUnavailable(context)) {
             new AlertDialog.Builder(context)

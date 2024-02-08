@@ -21,6 +21,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import org.json.JSONException;
@@ -29,6 +31,7 @@ import org.json.JSONObject;
 import ru.samrzhevsky.astronetics.BuildConfig;
 import ru.samrzhevsky.astronetics.Utils;
 import ru.samrzhevsky.astronetics.R;
+import ru.samrzhevsky.astronetics.VkAuth;
 import ru.samrzhevsky.astronetics.databinding.FragmentSettingsBinding;
 
 public class SettingsFragment extends Fragment {
@@ -41,6 +44,7 @@ public class SettingsFragment extends Fragment {
 
     private String downloadUrl;
 
+    @SuppressWarnings("deprecation")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -52,12 +56,29 @@ public class SettingsFragment extends Fragment {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
 
-        loadProfile();
+        if (VkAuth.getUserToken(context) == null) {
+            // display login button if token is null
+            binding.btnSettingsVkLogin.setOnClickListener(view -> VkAuth.startNewIntent(context));
+            progressDialog.cancel();
+        } else {
+            binding.settingsMainContent.setVisibility(View.VISIBLE);
+            loadProfile();
+        }
 
         binding.settingsSave.setOnClickListener(this::saveProfile);
         binding.settingsEditUnavailable.setVisibility(View.GONE);
 
         binding.settingsCheckForUpdates.setOnClickListener(this::checkForUpdates);
+
+        binding.settingsLogout.setOnClickListener(view -> new AlertDialog.Builder(context)
+                .setTitle(R.string.confirmation)
+                .setMessage(R.string.logout_confirm)
+                .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    dialog.cancel();
+                    logout(view);
+                })
+                .show());
 
         requestPermissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
@@ -117,6 +138,23 @@ public class SettingsFragment extends Fragment {
                             binding.settingsMidname.setEnabled(false);
                             binding.settingsSave.setEnabled(false);
                             binding.settingsEditUnavailable.setVisibility(View.VISIBLE);
+                        }
+                    });
+                } else {
+                    activity.runOnUiThread(() -> {
+                        progressDialog.cancel();
+
+                        NavController navController = NavHostFragment.findNavController(this);
+                        navController.popBackStack();
+
+                        try {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(R.string.error)
+                                    .setMessage(json.getString("error"))
+                                    .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                    .show();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
                         }
                     });
                 }
@@ -259,6 +297,61 @@ public class SettingsFragment extends Fragment {
                                     .show();
                         }
 
+                    });
+                } else {
+                    activity.runOnUiThread(() -> {
+                        progressDialog.cancel();
+
+                        try {
+                            new AlertDialog.Builder(context)
+                                    .setTitle(R.string.error)
+                                    .setMessage(json.getString("error"))
+                                    .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                                    .show();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                activity.runOnUiThread(() -> {
+                    progressDialog.cancel();
+
+                    new AlertDialog.Builder(context)
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.error_fatal)
+                            .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
+                            .show();
+                });
+
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void logout(View view) {
+        if (Utils.isNetworkUnavailable(context)) {
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.error_network)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.cancel())
+                    .show();
+            return;
+        }
+
+        progressDialog.show();
+
+        new Thread(() -> {
+            try {
+                String apiResponse = Utils.apiPostRequest(context, "logout", null, "");
+                JSONObject json = new JSONObject(apiResponse);
+
+                if (json.getInt("status") == 1) {
+                    VkAuth.unsetUserToken(context);
+
+                    activity.runOnUiThread(() -> {
+                        progressDialog.cancel();
+                        Navigation.findNavController(view).navigate(R.id.action_nav_settings_to_nav_theoretical_materials);
                     });
                 } else {
                     activity.runOnUiThread(() -> {

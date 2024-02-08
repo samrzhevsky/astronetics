@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Astronetics</string>
+    <string name="preference_file_key">ru.samrzhevsky.astronetics.preferences</string>
 
     <string name="menu_theoretical_materials">Теоретические материалы</string>
     <string name="menu_tests">Тесты</string>
@@ -37,6 +38,9 @@
     <string name="rating_download_cert">Скачать сертификат</string>
     <string name="rating_download_cert_confirm">Вы подтверждаете выпуск сертификата на имя: %1$s?</string>
     <string name="rating_need_to_fill_profile">Для получения сертификата необходимо заполнить профиль</string>
+    <string name="rating_reset_progress">Сбросить прогресс</string>
+    <string name="rating_reset_progress_confirm">Вы точно хотите сбросить ваш прогресс? Ваш сертификат будет удалён, однако вы сможете перепройти тесты заново</string>
+    <string name="rating_reset_progress_success">Ваш прогресс был успешно сброшен. Вы можете заново пройти тесты и улучшить свой результат!</string>
 
     <string name="settings_header">Настройки</string>
     <string name="settings_successfully_saved">Информация успешно обновлена</string>
@@ -57,6 +61,7 @@
     <string name="error_network">Необходимо подключение к Интернету</string>
     <string name="error_permissions">Отсутствуют необходимые разрешения</string>
 
+    <string name="success">Успешно!</string>
     <string name="congrats">Поздравляем!</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -70,6 +75,9 @@
     <string name="get">Получить</string>
     <string name="save">Сохранить</string>
     <string name="go_to_profile">Перейти к профилю</string>
+    <string name="vk_login">Войти через VK ID</string>
+    <string name="vk_logout">Выйти из аккаунта</string>
+    <string name="logout_confirm">Вы действительно хотите выйти?</string>
 
     <string name="empty_str" />
 </resources>

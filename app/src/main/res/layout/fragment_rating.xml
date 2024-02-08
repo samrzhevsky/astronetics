@@ -10,8 +10,8 @@
     android:paddingEnd="10dp"
     android:paddingStart="10dp"
     android:paddingTop="10dp"
-    android:visibility="gone"
     android:id="@+id/rating_layout"
+    android:gravity="center"
     tools:context="ru.samrzhevsky.astronetics.ui.RatingFragment">
 
     <LinearLayout
@@ -19,7 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="100dp"
@@ -53,7 +54,8 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:orientation="vertical"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="match_parent"
@@ -86,5 +88,22 @@
         android:layout_marginTop="5dp"
         android:visibility="gone"
         android:text="@string/rating_download_cert" />
+
+    <Button
+        android:id="@+id/btn_reset_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:backgroundTint="@color/red_light"
+        android:visibility="gone"
+        android:text="@string/rating_reset_progress" />
+
+    <Button
+        android:id="@+id/btn_rating_vk_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vk_login"
+        android:backgroundTint="@color/vk_blue"
+        android:textColor="#fff" />
 
 </LinearLayout>

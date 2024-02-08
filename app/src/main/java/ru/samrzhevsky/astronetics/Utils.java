@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.provider.Settings;
 import android.util.TypedValue;
 
 import java.io.BufferedReader;
@@ -71,8 +70,7 @@ public class Utils {
 
     @SuppressLint("HardwareIds")
     public static String apiGetRequest(Context context, String action, String urlParams) throws IOException {
-        String userId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        String urlStr = Constants.API_URL + "?action=" + action + "&user_id=" + userId;
+        String urlStr = Constants.API_URL + "?action=" + action + "&token=" + VkAuth.getUserToken(context);
         if (urlParams != null) {
             urlStr += "&" + urlParams;
         }
@@ -100,8 +98,7 @@ public class Utils {
 
     @SuppressLint("HardwareIds")
     public static String apiPostRequest(Context context, String action, String urlParams, String requestBody) throws IOException {
-        String userId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        String urlStr = Constants.API_URL + "?action=" + action + "&user_id=" + userId;
+        String urlStr = Constants.API_URL + "?action=" + action + "&token=" + VkAuth.getUserToken(context);
         if (urlParams != null) {
             urlStr += "&" + urlParams;
         }

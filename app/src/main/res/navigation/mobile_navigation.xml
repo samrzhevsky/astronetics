@@ -39,7 +39,11 @@
         android:id="@+id/nav_settings"
         android:name="ru.samrzhevsky.astronetics.ui.SettingsFragment"
         android:label="@string/settings_header"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_nav_settings_to_nav_theoretical_materials"
+            app:destination="@id/nav_theoretical_materials" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_theoretical_article"

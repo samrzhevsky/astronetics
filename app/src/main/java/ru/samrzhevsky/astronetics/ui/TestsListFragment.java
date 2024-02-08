@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import ru.samrzhevsky.astronetics.Utils;
+import ru.samrzhevsky.astronetics.VkAuth;
 import ru.samrzhevsky.astronetics.data.Test;
 import ru.samrzhevsky.astronetics.R;
 import ru.samrzhevsky.astronetics.adapters.TestsListAdapter;
@@ -70,6 +71,9 @@ public class TestsListFragment extends Fragment {
                         }
 
                         Test t = adapter.getItem(position);
+                        if (t == null) {
+                            return;
+                        }
 
                         Bundle bundle = new Bundle();
                         bundle.putInt("test_id", t.getId());
@@ -127,6 +131,7 @@ public class TestsListFragment extends Fragment {
         new Thread(gettingTestsFromApi).start();
     }
 
+    @SuppressWarnings("deprecation")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = requireActivity();
         context = requireContext();
@@ -140,7 +145,14 @@ public class TestsListFragment extends Fragment {
 
         binding.testsListBtnReload.setOnClickListener(view -> getTests());
 
-        getTests();
+        if (VkAuth.getUserToken(context) == null) {
+            // display login button if token is null
+            binding.testsListBtnLogin.setOnClickListener(view -> VkAuth.startNewIntent(context));
+            progressDialog.cancel();
+        } else {
+            binding.testsListBtnLogin.setVisibility(View.GONE);
+            getTests();
+        }
 
         return root;
     }
